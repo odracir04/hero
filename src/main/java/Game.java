@@ -18,11 +18,11 @@ public class Game {
     private final Screen screen;
     Position start_position = new Position(10, 10);
     Hero hero = new Hero(start_position);
-    Arena arena = new Arena(200, 200, hero);
+    Arena arena = new Arena(200, 50, hero);
 
     public Game() {
 
-        TerminalSize terminalSize = new TerminalSize(200, 200);
+        TerminalSize terminalSize = new TerminalSize(200, 70);
         DefaultTerminalFactory terminalFactory = new
                 DefaultTerminalFactory()
                 .setInitialTerminalSize(terminalSize);
