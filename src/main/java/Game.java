@@ -1,5 +1,8 @@
+import com.googlecode.lanterna.TerminalPosition;
 import com.googlecode.lanterna.TerminalSize;
 import com.googlecode.lanterna.TextCharacter;
+import com.googlecode.lanterna.TextColor;
+import com.googlecode.lanterna.graphics.TextGraphics;
 import com.googlecode.lanterna.input.KeyStroke;
 import com.googlecode.lanterna.input.KeyType;
 import com.googlecode.lanterna.screen.Screen;
@@ -13,13 +16,13 @@ import static com.googlecode.lanterna.input.KeyType.ArrowUp;
 
 public class Game {
     private final Screen screen;
-
-    private final Position start_position = new Position(10, 10);
+    Position start_position = new Position(10, 10);
     Hero hero = new Hero(start_position);
+    Arena arena = new Arena(200, 200, hero);
 
     public Game() {
 
-        TerminalSize terminalSize = new TerminalSize(40, 20);
+        TerminalSize terminalSize = new TerminalSize(200, 200);
         DefaultTerminalFactory terminalFactory = new
                 DefaultTerminalFactory()
                 .setInitialTerminalSize(terminalSize);
@@ -36,7 +39,7 @@ public class Game {
 
     private void draw() throws IOException {
         screen.clear();
-        hero.draw(screen);
+        arena.draw(screen.newTextGraphics());
         screen.refresh();
     }
 
@@ -46,30 +49,7 @@ public class Game {
             KeyStroke key = screen.readInput();
             if (key.getKeyType() == KeyType.EOF)
                 break;
-            processKey(key);
+            arena.processKey(key, screen);
         }
-    }
-
-    private void processKey(KeyStroke key) throws IOException {
-        switch (key.getKeyType()) {
-            case ArrowUp:
-                moveHero(hero.moveUp());
-                break;
-            case ArrowDown:
-                moveHero(hero.moveDown());
-                break;
-            case ArrowLeft:
-                moveHero(hero.moveLeft());
-                break;
-            case ArrowRight:
-                moveHero(hero.moveRight());
-                break;
-        }
-        if (key.getKeyType() == KeyType.Character && key.getCharacter() == 'q')
-            screen.close();
-    }
-
-    private void moveHero(Position position) {
-        hero.setPosition(position);
     }
 }
