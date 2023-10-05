@@ -12,11 +12,12 @@ import java.util.List;
 import java.util.Random;
 
 public class Arena {
-    private int width;
-    private int height;
+    private final int width;
+    private final int height;
     private final Hero hero;
     private final List<Wall> walls;
-    private final List<Coin> coins;
+    private List<Coin> coins;
+    private List<Monster> monsters;
 
     Arena(int width, int height, Hero hero) {
         this.hero = hero;
@@ -24,6 +25,7 @@ public class Arena {
         this.height = height;
         this.walls = createWalls();
         this.coins = createCoins();
+        this.monsters = createMonsters();
     }
 
     public void processKey(KeyStroke key, Screen screen) throws IOException {
@@ -55,15 +57,29 @@ public class Arena {
             if (!coin.getPosition().equals(hero.getPosition()))
                 coin.draw(graphics, "#123456", "@");
         }
+        for (Monster monster : monsters) {
+            if (!monster.getPosition().equals(hero.getPosition()))
+                monster.draw(graphics, "#FFFFFF", "9");
+        }
     }
     private void moveHero(Position position) {
-        if(canHeroMove(position)) {
+        if(canObjectMove(position)) {
             hero.setPosition(position);
+            moveMonsters();
             retrieveCoins();
         }
     }
 
-    private boolean canHeroMove(Position position) {
+    private void moveMonsters() {
+        for (Monster monster : monsters) {
+            Position position = monster.move();
+            if(canObjectMove(position)) {
+                monster.setPosition(position);
+            }
+        }
+    }
+
+    private boolean canObjectMove(Position position) {
         boolean flag = 0 < position.getY() && position.getY() < this.height - 1 && 0 < position.getX() && position.getX() < this.width - 1;
         for (Wall w : walls) {
             if (w.getPosition().equals(position)) {
@@ -96,12 +112,34 @@ public class Arena {
         return coins;
     }
 
+    private List<Monster> createMonsters() {
+        Random random = new Random();
+        ArrayList<Monster> monsters = new ArrayList<>();
+        for (int i = 0; i < 5; i++)
+            monsters.add(new Monster(random.nextInt(width - 2) + 1,
+                    random.nextInt(height - 2) + 1));
+        return monsters;
+    }
+
     private void retrieveCoins() {
-        for(Coin coin : coins) {
-            if(coin.getPosition().equals(hero.getPosition())) {
+        for (Coin coin : coins) {
+            if (coin.getPosition().equals(hero.getPosition())) {
                 coins.remove(coin);
                 break;
             }
+        }
+    }
+
+    public void verifyEndConditions(Screen screen) throws IOException {
+        for (Monster monster : monsters) {
+            if(monster.getPosition().equals(hero.getPosition())) {
+                screen.close();
+                System.out.println("You LOSE!");
+            }
+        }
+        if(coins.isEmpty()) {
+            System.out.println("You WIN!");
+            screen.close();
         }
     }
 }

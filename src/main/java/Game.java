@@ -40,6 +40,7 @@ public class Game {
     private void draw() throws IOException {
         screen.clear();
         arena.draw(screen.newTextGraphics());
+        arena.verifyEndConditions(screen);
         screen.refresh();
     }
 
