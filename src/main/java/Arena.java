@@ -16,8 +16,8 @@ public class Arena {
     private final int height;
     private final Hero hero;
     private final List<Wall> walls;
-    private List<Coin> coins;
-    private List<Monster> monsters;
+    private final List<Coin> coins;
+    private final List<Monster> monsters;
 
     Arena(int width, int height, Hero hero) {
         this.hero = hero;
@@ -47,7 +47,7 @@ public class Arena {
             screen.close();
     }
 
-    public void draw(TextGraphics graphics) throws IOException {
+    public void draw(TextGraphics graphics) {
         graphics.setBackgroundColor(TextColor.Factory.fromString("#00AAAA"));
         graphics.fillRectangle(new TerminalPosition(0, 0), new TerminalSize(width, height), ' ');
         for (Wall wall : walls)
